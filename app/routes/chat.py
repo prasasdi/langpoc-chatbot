@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.services.langgraph_service import run_graph
+from app.services.lang_service import run_graph
 from app.schemas.chat_schema import ChatRequest, ChatResponse
 
 router = APIRouter()

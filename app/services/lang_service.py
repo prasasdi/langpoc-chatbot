@@ -1,8 +1,11 @@
+import os
 from langgraph.graph import StateGraph, END
 from langchain_core.runnables import RunnableLambda
 from langchain.chat_models import ChatOpenAI
 
-llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo")
+llm = ChatOpenAI(temperature=0, 
+                 model="gpt-3.5-turbo", 
+                 openai_api_key=os.getenv("OPENAI_API_KEY"))
 
 def classifier_node(state):
     message = state["input"]
