@@ -142,7 +142,9 @@ pydantic-core==2.33.1
 pydantic-settings==2.8.1
     # via langchain-community
 python-dotenv==1.1.0
-    # via pydantic-settings
+    # via
+    #   -r requirements.in
+    #   pydantic-settings
 pyyaml==6.0.2
     # via
     #   langchain

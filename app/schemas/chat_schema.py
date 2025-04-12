@@ -5,3 +5,8 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     reply: str
+
+class ChatState(BaseModel):
+    input: str
+    output: str
+    category: str

@@ -1,33 +1,38 @@
 import os
-from langgraph.graph import StateGraph, END
+from langgraph.graph import StateGraph
 from langchain_core.runnables import RunnableLambda
 from langchain.chat_models import ChatOpenAI
+from app.schemas import chat_schema  # Pastikan mengimport ChatState
 
 llm = ChatOpenAI(temperature=0, 
                  model="gpt-3.5-turbo", 
                  openai_api_key=os.getenv("OPENAI_API_KEY"))
 
 def classifier_node(state):
-    message = state["input"]
+    message = state.input  # Akses menggunakan .input
     prompt = f"Klasifikasikan kategori input berikut:\n\n\"{message}\"\n\nJawab hanya salah satu dari: account_issues, product_info, pricing."
     
     response = llm.invoke(prompt)
     label = response.content.strip().lower()
-    return {"category": label}
+    return {**state.dict(), "category": label}  # pastikan state adalah model dan pakai .dict()
 
 def response_node(state):
-    label = state["category"]
+    label = state.category  # Akses menggunakan .category
+    
     if label == "account_issues":
-        return {"output": "Silakan klik 'Lupa Password' di halaman login."}
+        response = "Silakan klik 'Lupa Password' di halaman login."
     elif label == "product_info":
-        return {"output": "LangGraph adalah framework untuk membangun LLM workflows."}
+        response = "LangGraph adalah framework untuk membangun LLM workflows."
     elif label == "pricing":
-        return {"output": "Kami sedang ada promo, cek website kami untuk info lengkap!"}
+        response = "Kami sedang ada promo, cek website kami untuk info lengkap!"
     else:
-        return {"output": "Maaf, saya tidak mengerti pertanyaan Anda."}
+        response = "Maaf, saya tidak mengerti pertanyaan Anda."
+    
+    return {**state.dict(), "output": response}  # pastikan state adalah model dan pakai .dict()
 
 # Build the graph
-graph_builder = StateGraph()
+graph_builder = StateGraph(state_schema=chat_schema.ChatState)  # pastikan menggunakan model yang terstruktur
+
 graph_builder.add_node("classifier", RunnableLambda(classifier_node))
 graph_builder.add_node("responder", RunnableLambda(response_node))
 
