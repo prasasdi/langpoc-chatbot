@@ -14,7 +14,7 @@ def classifier_node(state):
     
     response = llm.invoke(prompt)
     label = response.content.strip().lower()
-    return {**state.dict(), "category": label}  # pastikan state adalah model dan pakai .dict()
+    return {"category": label}  # pastikan state adalah model dan pakai .dict()
 
 def response_node(state):
     label = state.category  # Akses menggunakan .category
@@ -28,7 +28,7 @@ def response_node(state):
     else:
         response = "Maaf, saya tidak mengerti pertanyaan Anda."
     
-    return {**state.dict(), "output": response}  # pastikan state adalah model dan pakai .dict()
+    return {"output": response}  # pastikan state adalah model dan pakai .dict()
 
 # Build the graph
 graph_builder = StateGraph(state_schema=chat_schema.ChatState)  # pastikan menggunakan model yang terstruktur
@@ -43,5 +43,8 @@ graph_builder.set_finish_point("responder")
 app = graph_builder.compile()
 
 def run_graph(input_text: str):
-    result = app.invoke({"input": input_text})
-    return result["output"]
+    print("buat state")
+    state = chat_schema.ChatState(input=input_text)
+    print("invoke state")
+    result = app.invoke(state)
+    return result.output

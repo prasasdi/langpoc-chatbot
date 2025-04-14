@@ -6,5 +6,7 @@ router = APIRouter()
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest):
+    print("masuk sini")
     response = run_graph(req.message)
+    print("run graph")
     return ChatResponse(reply=response)
